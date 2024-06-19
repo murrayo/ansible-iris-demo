@@ -19,8 +19,8 @@
   ansible.builtin.copy:
     src: "{{ role_path }}/files/{{ rhel_9_iris_install_file }}"
     dest: "{{ target_install_file_path }}/{{ rhel_9_iris_install_file }}"
-    owner: "{{ iris_owner }}" # Optional: specify the owner
-    group: "{{ iris group }}"  # Optional: specify the group
+#    owner: "{{ iris_owner }}" # Optional: specify the owner
+#    group: "{{ iris group }}"  # Optional: specify the group
     mode: '0644'  # Adjust file permissions as needed
     force: false
   when: ansible_distribution == "RedHat" and ansible_distribution_major_version == "9"
