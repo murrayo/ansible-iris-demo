@@ -1,0 +1,63 @@
+---
+- name: IRIS terminal module demo
+  ansible.builtin.debug:
+    msg: "IRIS terminal module demo"
+
+
+- name: Get ISC DB version
+  iscterminal2:
+    instance: "IRIS"
+    platform: "iris"
+    action: write_version
+  register: terminal_result
+  become: true
+  become_user: "{{ instance_owner }}"
+  become_flags: '-i'
+
+- name: Debug terminal
+  ansible.builtin.debug:
+    var: terminal_result
+
+- name: Get CPF name
+  iscterminal2:
+    instance: "IRIS"
+    platform: "iris"
+    action: get_cpf_name
+  register: terminal_result
+  become: true
+  become_user: "{{ instance_owner }}"
+  become_flags: '-i'
+
+- name: Debug terminal
+  ansible.builtin.debug:
+    var: terminal_result
+
+- name: Set status as fact
+  ansible.builtin.set_fact:
+    status_text: "{{ terminal_result.json.StatusText }}"
+
+- name: Debug StatusText
+  ansible.builtin.debug:
+    msg: "{{ status_text }}"
+
+#
+#- name: Display qlist
+#  ansible.builtin.debug:
+#    msg: "qlist {{ qlist_output.fields }}"
+#
+#- name: Create variables from dictionary
+#  ansible.builtin.set_fact:
+#    "{{ item.key }}": "{{ item.value }}"
+#  loop: "{{ lookup('dict', qlist_output.fields) }}"
+#
+#- name: Display qlist fields
+#  ansible.builtin.debug:
+#    msg: "iris is installed in: {{ instance_install_directory }}"
+#
+#- name: Display each field from qlist_output.fields
+#  ansible.builtin.debug:
+#    msg: "Key: {{ item.key }}, Value: {{ item.value }}"
+#  loop: "{{ lookup('dict', qlist_output.fields) }}"
+#  when: qlist_output.fields is defined
+
+

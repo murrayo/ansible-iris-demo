@@ -1,0 +1,82 @@
+---
+
+# ansible-playbook playbooks/db_server.yml --tags "never","start_stop_builtin_demo"
+
+- name: IRIS iris_start_stop using built-in command module demo
+  ansible.builtin.debug:
+    msg: "IRIS iris_start_stop builtin demo"
+
+# Start and stop using command
+
+- name: Skip start if already started
+  tags: start_stop_demo_skip_start
+  block:
+
+    - name: Start IRIS using built-in command
+      ansible.builtin.command: iris start IRIS
+      register: iris_output  # Capture the output from the module
+
+    - name: Display IRIS Start Output test 1
+      ansible.builtin.debug:
+        msg: "IRIS Start Output test 1: {{ iris_output.stdout }}"
+      when: iris_output.stdout is defined  # Ensures stdout is displayed only if defined
+
+    - name: Display IRIS Start Error test 1
+      ansible.builtin.debug:
+        msg: "IRIS Start Error test 1: {{ iris_output.stderr }}"
+      when: iris_output.stderr is defined  # Ensures stderr is displayed only if defined
+
+    # Already started
+
+    - name: Start IRIS using built-in command
+      ansible.builtin.command: iris start IRIS
+      register: iris_output  # Capture the output from the module
+
+    - name: Display IRIS Start Output test 2
+      ansible.builtin.debug:
+        msg: "IRIS Start Output test 2: {{ iris_output.stdout }}"
+      when: iris_output.stdout is defined  # Ensures stdout is displayed only if defined
+
+    - name: Display IRIS Start Error test 2
+      ansible.builtin.debug:
+        msg: "IRIS Start Error test 2: {{ iris_output.stderr }}"
+      when: iris_output.stderr is defined  # Ensures stderr is displayed only if defined
+
+# Stop
+
+- name: Stop IRIS using built-in command 1
+  ansible.builtin.command: iris stop IRIS quietly
+  register: iris_output  # Capture the output from the module
+
+- name: Display IRIS Stop Output test 1
+  ansible.builtin.debug:
+    msg: "IRIS Stop Output test 1: {{ iris_output.stdout }}"
+  when: iris_output.stdout is defined  # Ensures stdout is displayed only if defined
+
+- name: Display IRIS Stop Error test 1
+  ansible.builtin.debug:
+    msg: "IRIS Stop Error test 1: {{ iris_output.stderr }}"
+  when: iris_output.stderr is defined  # Ensures stderr is displayed only if defined
+
+# Already Stopped
+
+# Stop
+
+- name: Stop IRIS using built-in command 2
+  ansible.builtin.command: iris stop IRIS quietly
+  register: iris_output  # Capture the output from the module
+
+- name: Display IRIS Stop Output test 2
+  ansible.builtin.debug:
+    msg: "IRIS Stop Output test 2: {{ iris_output.stdout }}"
+  when: iris_output.stdout is defined  # Ensures stdout is displayed only if defined
+
+- name: Display IRIS Start Error test 2
+  ansible.builtin.debug:
+    msg: "IRIS Stop Error test 2: {{ iris_output.stderr }}"
+  when: iris_output.stderr is defined  # Ensures stderr is displayed only if defined
+
+- name: Display IRIS Stop return code 2
+  ansible.builtin.debug:
+    msg: "IRIS Stop return code test 2 is ZERO: {{ iris_output.rc }}  !!!!!"
+  when: iris_output.stdout is defined  # Ensures stdout is displayed only if defined

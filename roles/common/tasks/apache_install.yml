@@ -1,0 +1,35 @@
+---
+
+- name: Install Apache
+  ansible.builtin.debug:
+    msg: "Install Apache"
+
+- name: Install Apache on Red Hat 9
+  ansible.builtin.yum:
+    name: httpd
+    state: present
+  when: ansible_distribution == "RedHat" and ansible_distribution_major_version == "9"
+
+- name: Start and enable Apache on Red Hat 9
+  ansible.builtin.systemd:
+    name: httpd
+    state: started
+    enabled: true
+  when: ansible_distribution == "RedHat" and ansible_distribution_major_version == "9"
+
+- name: Conditional block example
+  when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version == "22"
+  block:
+
+    - name: Install Apache on Ubuntu 22.04
+      ansible.builtin.apt:
+        name: apache2
+        state: present
+        update_cache: true
+
+    - name: Start and enable Apache on Ubuntu 22.04
+      ansible.builtin.systemd:
+        name: apache2
+        state: started
+        enabled: true
+

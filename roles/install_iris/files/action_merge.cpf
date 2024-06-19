@@ -1,0 +1,6 @@
+[Actions]
+CreateDatabase:Name=APPA,Directory=/data/databases/APPA
+CreateNamespace:Name=APPA,Globals=APPA,Interop=1
+
+CreateDatabase:Name=APPB,Directory=/data/databases/APPB
+CreateNamespace:Name=APPB,Globals=APPB,Interop=1

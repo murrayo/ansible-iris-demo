@@ -1,0 +1,5 @@
+---
+- name: Complete site
+
+- import_playbook: db_server.yml
+- import_playbook: web_server.yml

@@ -1,0 +1,8 @@
+---
+
+# Handler to reload systemd daemon whenever the template changes.
+# This ensures that systemd is aware of any new or updated service files.
+
+- name: Reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: true

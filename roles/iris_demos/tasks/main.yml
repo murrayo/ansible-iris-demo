@@ -1,0 +1,94 @@
+---
+- name: IRIS modules demos
+  ansible.builtin.debug:
+    msg: "IRIS modules demos"
+
+# Some notes about tags
+
+# Only run qlist demo
+# ansible-playbook playbooks/db_server.yml --tags "qlist_demo"
+
+# Skip tasks tagged with never
+# ansible-playbook playbooks/db_server.yml --skip-tags "never"
+
+# Explicitly run a task normally skipped
+# ansible-playbook playbooks/db_server.yml --tags "never"
+
+# Special tags
+# always: will run regardless of any other tag or skipping. Useful for setup or cleanup that must always execute.
+# never: will never run unless you explicitly request them with the --tags never
+# tagged: will run only if you've specified at least one tag when running the playbook.
+# untagged: will run only if you haven't specified any tags on the command line.
+# all: behaves as if no tags were specified at all, causing all tasks to execute.
+
+# Demos
+
+# Output Ansible facts only when tag explicitly used
+
+- name: Ansible facts dump
+  ansible.builtin.import_tasks: config_dump.yml
+  tags: ["ansible_dump_demo"]
+  when: "'ansible_dump_demo' in ansible_run_tags"
+
+# iris start and stop using built in command demo, only when explicitly called.
+
+- name: IRIS iris_start_stop_builtin demo
+  ansible.builtin.import_tasks: iris_start_stop_builtin.yml
+  tags: ["start_stop_builtin_demo", "never"]
+
+# iris start and stop demo
+
+- name: IRIS iris_start_stop demo
+  ansible.builtin.import_tasks: iris_start_stop.yml
+  tags: ["start_stop_demo"]
+
+# iris start and stop using systemd, only when explicitly called.
+
+# The difference between include_tasks and import_tasks is that import_tasks is processed during the playbook parse time,
+#  whereas include_tasks is processed during execution time.
+# This means that import_tasks can be used when you need to include and execute tasks in a more static manner.
+
+- name: IRIS iris_start_stop_systemd demo
+  ansible.builtin.import_tasks: "../../common/tasks/iris_start_stop_systemd.yml"
+  tags: ["start_stop_systemd_demo"]
+
+# hugepages resize demo
+
+- name: IRIS hugepages demo
+  ansible.builtin.import_tasks: hugepages_demo.yml
+  tags: ["hugepages_demo"]
+
+# cpf merge demo
+
+- name: IRIS cpf_merge demo
+  ansible.builtin.import_tasks: cpf_merge_demo.yml
+  tags: ["cpf_merge_demo"]
+
+
+# qlist demo
+- name: IRIS qlist demo
+  ansible.builtin.import_tasks: iris_qlist.yml
+  tags: ["qlist_demo"]
+
+# cpf_merge_action_demo.yml
+
+- name: IRIS action demo
+  ansible.builtin.import_tasks: cpf_merge_action_demo.yml
+  tags: ["cpf_merge_action_demo"]
+
+- name: IRIS cpf merge builtin demo
+  ansible.builtin.import_tasks: iris_cpf_merge_action_demo.yml
+  tags: ["iris_cpf_merge_action_demo"]
+
+# terminal demo
+- name: IRIS terminal demo
+  ansible.builtin.import_tasks: iris_terminal.yml
+  tags: ["iris_terminal_demo"]
+
+# iris qlist demo
+# Must be a static include to use "--start-at-task"
+- name: IRIS iris_qlist start at task demo
+  ansible.builtin.include_tasks:
+    file: iris_qlist.yml
+
+

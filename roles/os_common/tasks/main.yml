@@ -1,0 +1,9 @@
+---
+- name: Start OS install
+  ansible.builtin.debug:
+    msg: "Start os_common role"
+
+# Install recommended Linux packages for TrakCare
+- name: Include RHEL 9 packages
+  ansible.builtin.include_tasks: rhel9_tc_packages.yml
+  when: ansible_distribution == "RedHat" and ansible_distribution_major_version == "9"

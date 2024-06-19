@@ -1,0 +1,112 @@
+---
+- name: IRIS iris_start_stop module demo
+  ansible.builtin.debug:
+    msg: "IRIS iris_start_stop module demo"
+
+# Start, quietly. If already started will have "ok" status
+
+- name: Start IRIS instance test 1
+  iris_start_stop:
+    instance_name: 'IRIS'
+    action: 'start'
+    quietly: true
+  register: iris_output  # Capture the output from the module
+
+- name: Display IRIS Start Output test 1
+  ansible.builtin.debug:
+    msg: "IRIS Start Output test 1: {{ iris_output.stdout }}"
+  when: iris_output.stdout is defined  # Ensures stdout is displayed only if defined
+
+- name: Display IRIS Start Error test 1
+  ansible.builtin.debug:
+    msg: "IRIS Start Error test 1: {{ iris_output.stderr }}"
+  when: iris_output.stderr is defined  # Ensures stderr is displayed only if defined
+
+- name: Display IRIS Start memory facts test 1
+  ansible.builtin.debug:
+    msg: "IRIS Start memory facts test 1: {{ iris_output.memory_info }}"
+  when: iris_output.memory_info is defined  # Ensures stderr is displayed only if defined
+
+
+# Stop iris, in Ansible context "quietly" is required, else the command hangs
+# iris stop has output if there is a restart, use that to display changed
+# if iris is already stopped, the iris command return code is 0, so cannot check
+
+- name: Stop IRIS instance test 1
+  iris_start_stop:
+    instance_name: 'IRIS'
+    action: 'stop'
+    quietly: true
+    restart: true
+  register: iris_output  # Capture the output from the stop command
+
+- name: Display IRIS Stop Output test 1
+  ansible.builtin.debug:
+    msg: "IRIS Stop Output test 1: {{ iris_output.stdout }}"
+  when: iris_output.stdout is defined  # Display stdout from stop command
+
+- name: Display IRIS Stop Error test 1
+  ansible.builtin.debug:
+    msg: "IRIS Stop Error test 1: {{ iris_output.stderr }}"
+  when: iris_output.stderr is defined  # Display stderr from stop command
+
+- name: Display IRIS Stop memory facts test 1
+  ansible.builtin.debug:
+    msg: "IRIS Stop memory facts test 1: {{ iris_output.memory_info }}"
+  when: iris_output.memory_info is defined
+
+# Start, quietly. If already started will have "ok" status
+
+- name: Start IRIS instance test 2
+  iris_start_stop:
+    instance_name: 'IRIS'
+    action: 'start'
+  register: iris_output  # Capture the output from the module
+
+- name: Display IRIS Start Output test 2
+  ansible.builtin.debug:
+    msg: "IRIS Start Output test 2: {{ iris_output.stdout }}"
+  when: iris_output.stdout is defined  # Ensures stdout is displayed only if defined
+
+- name: Display IRIS Start Error test 2
+  ansible.builtin.debug:
+    msg: "IRIS Start Error test 2: {{ iris_output.stderr }}"
+  when: iris_output.stderr is defined  # Ensures stderr is displayed only if defined
+
+# iris stop returns 0 even if already stopped
+
+- name: Stop IRIS instance test 2
+  iris_start_stop:
+    instance_name: 'IRIS'
+    action: 'stop'
+    quietly: true
+  register: iris_output  # Capture the output from the stop command
+
+- name: Display IRIS Stop Output test 2
+  ansible.builtin.debug:
+    msg: "IRIS Stop Output test 2: {{ iris_output.stdout }}"
+  when: iris_output.stdout is defined  # Display stdout from stop command
+
+- name: Display IRIS Stop Error test 2
+  ansible.builtin.debug:
+    msg: "IRIS Stop Error test 2: {{ iris_output.stderr }}"
+  when: iris_output.stderr is defined  # Display stderr from stop command
+
+# Stop again, nothing happens
+
+- name: Stop IRIS instance test 3
+  iris_start_stop:
+    instance_name: 'IRIS'
+    action: 'stop'
+    quietly: true
+  register: iris_output  # Capture the output from the stop command
+
+- name: Display IRIS Stop Output test 3
+  ansible.builtin.debug:
+    msg: "IRIS Stop Output test 3: {{ iris_output.stdout }}"
+  when: iris_output.stdout is defined  # Display stdout from stop command
+
+- name: Display IRIS Stop Error test 3
+  ansible.builtin.debug:
+    msg: "IRIS Stop Error test 3: {{ iris_output.stderr }}"
+  when: iris_output.stderr is defined  # Display stderr from stop command

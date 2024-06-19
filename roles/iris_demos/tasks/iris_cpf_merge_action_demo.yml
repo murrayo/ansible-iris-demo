@@ -1,0 +1,77 @@
+---
+
+# Note: This will timeout because merge prompts for you to supply a username and password (if OS authentication is not enabled).
+
+- name: IRIS iris merge built-in command module demo
+  ansible.builtin.debug:
+    msg: "IRIS iris merge builtin demo"
+
+- name: Set file name - handy for playing
+  ansible.builtin.set_fact:
+    action_filename: "action_merge_os_auth.cpf"
+
+# Get details about the instance - install directory
+
+- name: Execute IRIS qlist
+  iris_qlist:
+    instance_name: 'IRIS'
+  register: qlist_output
+
+- name: Create variables from dictionary
+  ansible.builtin.set_fact:
+    "{{ item.key }}": "{{ item.value }}"
+  loop: "{{ lookup('dict', qlist_output.fields) }}"
+
+# Ensue the cpf merge file exists
+
+- name: Ensure the target directory for the cpf merge file exists
+  ansible.builtin.file:
+    path: "{{ target_install_file_path }}"
+    state: directory
+    mode: '0755'  # Adjust permissions as needed
+
+- name: Copy the IRIS configuration merge file to the target server
+  ansible.builtin.copy:
+    src: "{{ role_path }}/files/{{ action_filename }}"
+    dest: "{{ target_install_file_path }}/{{ action_filename }}"
+    owner: irisuser  # Optional: specify the owner
+    group: irisgroup  # Optional: specify the group
+    mode: '0644'  # Adjust file permissions as needed
+    force: true
+
+# Install components if needed to answer prompts
+
+- name: Ensure pip3 is installed
+  ansible.builtin.yum:
+    name: python3-pip
+    state: present
+
+- name: Ensure pexpect is installed
+  ansible.builtin.pip:
+    name: pexpect
+    executable: pip3
+
+# Do something
+
+- name: Run IRIS iris merge command with credentials
+  ansible.builtin.shell: |
+    set -o pipefail
+    (
+      echo '{{ super_user }}'
+      sleep 1
+      echo '{{ super_user_password }}'
+      sleep 1
+    ) | iris merge {{ iris_qlist_instance_name }} "{{ target_install_file_path }}/{{ action_filename }}" "{{ iris_qlist_instance_install_directory }}/{{ iris_qlist_configuration_file_name_last_used }}"
+  register: iris_output
+  changed_when: iris_output.rc != 0  # Use the return code to define when the task has changed
+
+
+- name: Display IRIS merge Output
+  ansible.builtin.debug:
+    msg: "IRIS iris merge Output: {{ iris_output.stdout }}"
+  when: iris_output.stdout is defined  # Ensures stdout is displayed only if defined
+
+- name: Display IRIS merge Error
+  ansible.builtin.debug:
+    msg: "IRIS iris merge: {{ iris_output.stderr }}"
+  when: iris_output.stderr is defined  # Ensures stderr is displayed only if defined

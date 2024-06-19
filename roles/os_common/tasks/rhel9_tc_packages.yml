@@ -1,0 +1,21 @@
+---
+
+- name: Ensure required packages for TrakCare are installed
+  ansible.builtin.dnf:
+    name:
+      - bzip2
+      - cups
+      - iotop
+      - nano
+      - net-tools
+      - nfs-utils
+      - rpcbind
+      - rsync
+      - rsyslog
+      - tmux
+      - sssd
+      - sysstat
+      - unzip
+      - krb5-devel
+      - krb5-libs
+    state: present

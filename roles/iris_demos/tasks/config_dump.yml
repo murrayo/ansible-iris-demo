@@ -1,0 +1,41 @@
+---
+
+- name: Start of config_dump
+  ansible.builtin.debug:
+    msg: "file: config_dump.yml"
+  tags: start_preflight
+
+- name: Write all variables to a file
+  ansible.builtin.copy:
+    content: "{{ hostvars[inventory_hostname] | to_nice_json }}"
+    dest: "{{ role_path }}/files/{{ inventory_hostname }}_vars.json"
+    mode: "0664"
+  delegate_to: localhost
+  become: false
+  tags: variables_to_json
+
+- name: Variable dump location
+  ansible.builtin.debug:
+    msg: "Dump of variable sent to: {{ role_path }}/files/{{ inventory_hostname }}_vars.json"
+  tags: variables_to_json
+
+# To see a list of all of the facts that are available run the “setup” module as an ad-hoc action:
+# ansible -m setup hostname
+- name: Print several lines of specifications
+  vars:
+    msg: |
+         Ansible inventory name: '{{ inventory_hostname }}'
+         Current nodename: '{{ ansible_nodename }}'
+         Server type: '{{ server_type }}'
+         Interface: '{{ ansible_default_ipv4.interface }}'
+         IRIS instance: '{{ iris_instance }}'
+         Memory in MB: '{{ ansible_memtotal_mb }}'
+         Processor: '{{ ansible_processor[2] }}'
+         Processor cores: '{{ ansible_processor_cores }}'
+         Processor Threads per core: '{{ ansible_processor_threads_per_core }}'
+         Processor vCPUs: '{{ ansible_processor_vcpus }}'
+         Product name: '{{ ansible_product_name }}'
+         Distribution: '{{ ansible_distribution }}' '{{ ansible_distribution_version }}'
+         OS Package manager: '{{ ansible_pkg_mgr }}'
+  ansible.builtin.debug:
+    msg: "{{ msg.split('\n') }}"

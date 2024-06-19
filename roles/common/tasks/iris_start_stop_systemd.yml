@@ -1,0 +1,42 @@
+---
+
+# ansible-playbook playbooks/db_server.yml --tags "never","start_stop_systemd_demo" -l dbserver1
+
+- name: IRIS iris_start_stop using systemd module demo
+  ansible.builtin.debug:
+    msg: "IRIS iris_start_stop systemd demo"
+
+
+# Stop Iris using custom module for demo
+
+- name: Stop IRIS instance test 1
+  iris_start_stop:
+    instance_name: "{{ iris_instance }}"
+    action: "stop"
+    quietly: true
+
+ # Configure Iris with a systemd startup script
+
+- name: Deploy the systemd service template for IRIS
+  ansible.builtin.template:
+    src: iris.service.j2
+    dest: "/etc/systemd/system/{{ iris_instance }}.service"
+    mode: '0644'
+  notify: Reload systemd
+
+- name: Ensure iris.service is enabled and started
+  ansible.builtin.systemd_service:
+    name: "{{ iris_instance }}.service"
+    enabled: true
+    state: restarted
+
+- name: Check if IRIS service is running
+  ansible.builtin.systemd_service:
+    name: "{{ iris_instance }}"
+    state: started
+  register: service_status
+
+- name: Display IRIS service status
+  ansible.builtin.debug:
+    msg: "IRIS service is {{ service_status.status.LoadState }}"
+

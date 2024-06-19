@@ -1,0 +1,28 @@
+---
+- name: IRIS cpf merge action demo
+  ansible.builtin.debug:
+    msg: "IRIS cpf merge action"
+
+# Run the cpf merge
+
+- name: Ensure the target directory for the cpf merge file exists
+  ansible.builtin.file:
+    path: "{{ target_install_file_path }}"
+    state: directory
+    mode: '0755'  # Adjust permissions as needed
+
+- name: Copy the IRIS configuration merge file to the target server
+  ansible.builtin.copy:
+    src: "{{ role_path }}/files/action_merge.cpf"
+    dest: "{{ target_install_file_path }}/action_merge.cpf"
+    mode: '0755'  # Adjust file permissions as needed
+    force: true
+
+- name: Ensure database directories exists else CreateDatabase() will fail
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0777'
+  loop:
+    - "{{ iris_app_database_directory }}/APPA"
+    - "{{ iris_app_database_directory }}/APPB"

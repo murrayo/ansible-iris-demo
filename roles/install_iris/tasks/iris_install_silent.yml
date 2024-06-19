@@ -1,0 +1,123 @@
+---
+
+- name: Silent Install of IRIS
+  ansible.builtin.debug:
+    msg: "Silent Install of IRIS"
+
+- name: Set user and group facts
+  ansible.builtin.set_fact:
+    custom_groups:
+      - name: irisgroup
+    custom_users:
+      - name: irisowner
+        groups: irisgroup
+      - name: irisuser
+        groups: irisgroup
+
+- name: Debug custom_groups and custom_users
+  ansible.builtin.debug:
+    msg: "Custom Groups: {{ custom_groups }}, Custom Users: {{ custom_users }}"
+
+- name: Create custom groups
+  ansible.builtin.group:
+    name: "{{ item.name }}"
+    state: present
+  loop: "{{ custom_groups }}"
+
+- name: Create custom users
+  ansible.builtin.user:
+    name: "{{ item.name }}"
+    groups: "{{ item.groups }}"
+    state: present
+  loop: "{{ custom_users }}"
+
+- name: Check if IRIS is installed by looking for the iris command
+  ansible.builtin.command: which iris
+  register: iris_command_exists
+  ignore_errors: true
+  changed_when: iris_command_exists.rc != 0 # <- Uses the return code to define when the task has changed.
+
+- name: Display command return code
+  ansible.builtin.debug:
+    msg: "IRIS command return code: {{ iris_command_exists.rc }}"
+  when: iris_command_exists.stdout is defined  # Ensures stdout is displayed only if defined
+
+- name: Run installer if iris command does not exist
+  ansible.builtin.debug:
+    msg: "IRIS not installed test - Installer will run (remove to allow installation)"
+  when: iris_command_exists.failed
+
+- name: Conditional block example
+  when: iris_command_exists.failed and (ansible_distribution == "RedHat" and ansible_distribution_major_version == "9")
+  block:
+
+    - name: Ensure the target install directory exists
+      ansible.builtin.file:
+        path: "{{ iris_install_directory }}"
+        state: directory
+        mode: '0755'  # Adjust permissions as needed
+
+    - name: Override iris_installer_path variable based on OS
+      ansible.builtin.set_fact:
+        iris_installer_path: "{{ target_install_file_path }}/{{ rhel_9_iris_install_file_base }}"
+
+    # The scope of the environment variables is limited to the execution of the specific command.
+
+    - name: Run the IRIS silent installer
+      ansible.builtin.command: ./irisinstall_silent {{ packages }}
+      args:
+        chdir: "{{ iris_installer_path }}"
+      environment:
+        ISC_PACKAGE_INSTANCENAME: "{{ instancename }}"
+        ISC_PACKAGE_INSTALLDIR: "{{ installdir }}"
+        ISC_PACKAGE_UNICODE: "{{ unicode }}"
+        ISC_PACKAGE_INITIAL_SECURITY: "{{ initial_security }}"
+        ISC_PACKAGE_MGRUSER: "{{ instance_owner }}"
+        ISC_PACKAGE_MGRGROUP: "{{ iris_mgr_group }}"
+        ISC_PACKAGE_USER_PASSWORD: "{{ user_password }}"
+        ISC_PACKAGE_CSPSYSTEM_PASSWORD: "{{ cspsystem_password }}"
+        ISC_PACKAGE_IRISUSER: "{{ irisuser }}"
+        ISC_PACKAGE_IRISGROUP: "{{ irisgroup }}"
+        ISC_PACKAGE_CLIENT_COMPONENTS: "{{ client_components }}"
+        ISC_PACKAGE_WEB_SERVERTYPE: "{{ web_server_type }}"
+        ISC_PACKAGE_WEB_APACHE_CONF: "{{ apache_config_file }}"
+        ISC_PACKAGE_STARTIRIS: "{{ start_iris }}"
+        ISC_CPF_MERGE_FILE: "{{ target_install_file_path }}/action_merge.cpf"
+      register: install_output
+      ignore_errors: true
+      changed_when: iris_command_exists.rc != 0 # <- Uses the return code to define when the task has changed.
+
+    - name: Display installation output
+      ansible.builtin.debug:
+        var: install_output.stdout_lines
+
+    - name: Copy the IRIS key file to the target server
+      ansible.builtin.copy:
+        src: "{{ role_path }}/files/iris.key"
+        dest: "{{ iris_install_directory }}/mgr/iris.key"
+        owner: irisuser  # Optional: specify the owner
+        group: irisgroup  # Optional: specify the group
+        mode: '0644'  # Adjust file permissions as needed
+        force: true
+
+    - name: Stop IRIS using built-in command to apply key
+      ansible.builtin.command: iris stop IRIS quietly
+      register: iris_output  # Capture the output from the module
+      changed_when: iris_output != 0 # <- Uses the return code to define when the task has changed.
+
+    - name: Start IRIS using built-in command
+      ansible.builtin.command: iris start IRIS
+      register: iris_output  # Capture the output from the module
+      changed_when: iris_output != 0 # <- Uses the return code to define when the task has changed.
+
+- name: Display URLs on Separate Lines (Multiline String)
+  vars:
+    urls:
+      Management_Portal: "http://{{ ansible_host }}/csp/sys/UtilHome.csp"
+      CSP_Gateway: "http://{{ ansible_host }}/csp/bin/Systems/Module.cxw"
+  ansible.builtin.debug:
+    msg: | # Multiline string literal in YAML
+      {% for key, value in urls.items() %}
+      {{ key }}: {{ value }}
+      {% endfor %}
+

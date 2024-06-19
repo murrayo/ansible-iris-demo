@@ -1,0 +1,52 @@
+---
+- name: IRIS hugepages demo
+  ansible.builtin.debug:
+    msg: "IRIS Set hugepages based on IRIS shared memory"
+
+# Stop iris, in Ansible context "quietly" is required, else the command hangs
+# iris stop has output if there is a restart, use that to display changed status
+
+- name: Stop IRIS instance and restart
+  iris_start_stop:
+    instance_name: 'IRIS'
+    action: 'stop'
+    quietly: true
+    restart: true
+  register: iris_output  # Capture the output from the stop command
+
+- name: Set dynamic variables using IRIS start output
+  ansible.builtin.set_fact:
+    "{{ item.key }}": "{{ item.value }}"
+  loop: "{{ iris_output.memory_info | ansible.builtin.dict2items }}"
+
+# Stop IRIS
+
+- name: Stop IRIS instance
+  iris_start_stop:
+    instance_name: 'IRIS'
+    action: 'stop'
+    quietly: true
+
+# Set hugepages
+
+- name: Set hugepages
+  ansible.builtin.include_tasks: set_hugepages.yml
+  vars:
+    hugepages: "{{ iris_start_hugepages_2MB }}"
+
+# Start, quietly. If already started will have "ok" status
+
+- name: Start IRIS instance again
+  iris_start_stop:
+    instance_name: 'IRIS'
+    action: 'start'
+    quietly: true
+  register: iris_output  # Capture the output from the module
+
+- name: Check HugePages_Total in /proc/meminfo
+  ansible.builtin.command: grep HugePages_Total /proc/meminfo
+  register: hugepages_total
+
+- name: Display the number of huge memory pages
+  ansible.builtin.debug:
+    msg: "Number of huge memory pages: {{ hugepages_total.stdout }}"

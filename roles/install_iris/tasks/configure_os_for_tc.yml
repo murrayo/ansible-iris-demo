@@ -1,0 +1,45 @@
+---
+
+- name: Configure OS for Application
+  ansible.builtin.debug:
+    msg: "Configure OS for Application"
+
+# When using the dnf or yum modules, it’s beneficial to list all the packages together.
+# The package manager can resolve dependencies and perform the installation in a single transaction.
+# This method also makes use of the package manager’s optimization features, like downloading packages in parallel.
+
+- name: Display common_application_packages
+  ansible.builtin.debug:
+    var: common_application_packages
+  when: ansible_distribution == "RedHat" and ansible_distribution_major_version == "9"
+
+- name: Display red_hat_application_packages
+  ansible.builtin.debug:
+    var: red_hat_application_packages
+  when: ansible_distribution == "RedHat" and ansible_distribution_major_version == "9"
+
+- name: Update the package cache
+  ansible.builtin.dnf:
+    update_cache: true
+  when: ansible_distribution == "RedHat" and ansible_distribution_major_version == "9"
+
+- name: Ensure required packages for Application are installed on Red Hat
+  ansible.builtin.dnf:
+    name: "{{ common_application_packages + red_hat_application_packages }}"
+    state: present
+  register: dnf_output
+  when: ansible_distribution == "RedHat" and ansible_distribution_major_version == "9"
+
+- name: Display dnf output
+  ansible.builtin.debug:
+    var: dnf_output
+  when: ansible_distribution == "RedHat" and ansible_distribution_major_version == "9"
+
+# Ubuntu
+
+#- name: Ensure required packages for Application are installed using apt
+#  ansible.builtin.apt:
+#    name: "{{ common_application_packages }}"
+#    state: present
+#    update_cache: true
+#  when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version == "22"

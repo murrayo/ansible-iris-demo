@@ -1,0 +1,67 @@
+---
+
+- name: Transfer IRIS install files only to save demo time
+  ansible.builtin.debug:
+    msg: "Transfer IRIS install files"
+
+# Example of timing an event.
+- name: Record start time
+  ansible.builtin.command: date +%s
+  register: start_time
+
+- name: Ensure the target directory exists
+  ansible.builtin.file:
+    path: "{{ target_install_file_path }}"
+    state: directory
+    mode: '0755'  # Adjust permissions as needed
+
+- name: Copy the IRIS install file to the RHEL 9 target server
+  ansible.builtin.copy:
+    src: "{{ role_path }}/files/{{ rhel_9_iris_install_file }}"
+    dest: "{{ target_install_file_path }}/{{ rhel_9_iris_install_file }}"
+    owner: "{{ iris_owner }}" # Optional: specify the owner
+    group: "{{ iris group }}"  # Optional: specify the group
+    mode: '0644'  # Adjust file permissions as needed
+    force: false
+  when: ansible_distribution == "RedHat" and ansible_distribution_major_version == "9"
+
+- name: Record end time
+  ansible.builtin.command: date +%s
+  register: end_time
+
+- name: Calculate and display the duration
+  ansible.builtin.debug:
+    msg: "The task took {{ end_time.stdout | int - start_time.stdout | int }} seconds to complete."
+
+- name: Copy the IRIS install file to the Ubuntu 22 target server
+  ansible.builtin.copy:
+    src: "{{ role_path }}/files/{{ ubuntu_22_04_iris_install_file }}"
+    dest: "{{ target_install_file_path }}/{{ ubuntu_22_04_iris_install_file }}"
+#    owner: iris  # Optional: specify the owner
+#    group: iris  # Optional: specify the group
+    mode: '0644'  # Adjust file permissions as needed
+    force: false
+  when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version == "22"
+
+# Synchronize is a wrapper for rsync and can be useful for more complex tasks,
+# or node to node. You can also use fetch to Fetch files from remote nodes.
+
+# Example of timing an event.
+# - name: Record start time
+#  ansible.builtin.command: date +%s
+#  register: start_time
+
+# - name: Synchronize the IRIS install file to the target server
+#  ansible.builtin.synchronize:
+#    src: "{{ role_path }}/files/{{ rhel_9_iris_install_file }}"
+#    dest: "{{ target_install_file_path }}"
+#    mode: push
+#  when: ansible_distribution == "RedHat" and ansible_distribution_major_version == "9"
+
+# - name: Record end time
+#  ansible.builtin.command: date +%s
+#  register: end_time
+#
+# - name: Calculate and display the duration
+#  ansible.builtin.debug:
+#    msg: "The task took {{ end_time.stdout | int - start_time.stdout | int }} seconds to complete."

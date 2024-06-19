@@ -1,0 +1,30 @@
+[db_servers]
+# monitor1 ansible_host=ec2-13-211-219-77.ap-southeast-2.compute.amazonaws.com ansible_user=ubuntu
+dbserver1 ansible_host=ec2-13-210-194-229.ap-southeast-2.compute.amazonaws.com ansible_user=ec2-user
+
+#[db_servers]
+#db_server_1 ansible_host=ec2-3-27-197-88.ap-southeast-2.compute.amazonaws.com ansible_user=ec2-user
+#db_server_2 ansible_host=ec2-54-252-244-119.ap-southeast-2.compute.amazonaws.com ansible_user=ec2-user
+
+#[ucr_servers]
+#ucr_1 ansible_host=ec2-54-252-147-60.ap-southeast-2.compute.amazonaws.com ansible_user=ec2-user
+#ucr_2 ansible_host=ec2-3-107-28-199.ap-southeast-2.compute.amazonaws.com ansible_user=ec2-user
+
+#[edge_servers]
+#edge_n ansible_host=ec2-54-79-67-71.ap-southeast-2.compute.amazonaws.com ansible_user=ec2-user
+
+#[healthshare_servers:children]
+#ucr_servers
+#edge_servers
+
+#[common_servers:children]
+#db_servers
+#healthshare_servers
+
+#[monitors]
+#monitor1 ansible_host=ec2-54-206-57-209.ap-southeast-2.compute.amazonaws.com ansible_user=ubuntu
+
+#[web_servers]
+#webserver_1 ansible_host=ec2-3-107-20-77.ap-southeast-2.compute.amazonaws.com ansible_user=ec2-user
+#webserver_2 ansible_host=ec2-54-153-145-106.ap-southeast-2.compute.amazonaws.com ansible_user=ubuntu
+

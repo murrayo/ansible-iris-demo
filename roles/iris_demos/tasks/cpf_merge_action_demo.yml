@@ -1,0 +1,61 @@
+---
+- name: IRIS cpf merge action demo
+  ansible.builtin.debug:
+    msg: "IRIS cpf merge action demo"
+
+- name: Set file name - handy for playing
+  ansible.builtin.set_fact:
+    action_filename: "action_merge_os_auth.cpf"
+
+# Get details about the instance - install directory
+
+- name: Execute IRIS qlist
+  iris_qlist:
+    instance_name: 'IRIS'
+  register: qlist_output
+
+- name: Create variables from dictionary
+  ansible.builtin.set_fact:
+    "{{ item.key }}": "{{ item.value }}"
+  loop: "{{ lookup('dict', qlist_output.fields) }}"
+
+
+# Stop iris
+
+- name: Stop IRIS instance and restart
+  iris_start_stop:
+    instance_name: 'IRIS'
+    action: 'stop'
+    quietly: true
+  register: iris_output  # Capture the output from the stop command
+
+# Run the cpf merge
+
+- name: Ensure the target directory for the cpf merge file exists
+  ansible.builtin.file:
+    path: "{{ target_install_file_path }}"
+    state: directory
+    mode: '0755'  # Adjust permissions as needed
+
+- name: Copy the IRIS configuration merge file to the target server
+  ansible.builtin.copy:
+    src: "{{ role_path }}/files/{{ action_filename }}"
+    dest: "{{ target_install_file_path }}/{{ action_filename }}"
+    owner: irisuser  # Optional: specify the owner
+    group: irisgroup  # Optional: specify the group
+    mode: '0644'  # Adjust file permissions as needed
+    force: true
+
+- name: Set the environment variables and start IRIS
+  environment:
+    ISC_CPF_MERGE_FILE: "{{ target_install_file_path }}/{{ action_filename }}"
+    ISC_PACKAGE_INSTALLDIR: "{{ iris_qlist_instance_install_directory }}"
+  iris_start_stop:
+    instance_name: 'IRIS'
+    action: 'start'
+    quietly: true
+  register: iris_output
+
+- name: Display output from IRIS start command
+  ansible.builtin.debug:
+    msg: "{{ iris_output.stdout_lines }}"

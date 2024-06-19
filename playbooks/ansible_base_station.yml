@@ -1,0 +1,11 @@
+---
+# file: ansible_base_station.yml
+
+- name: Configure Ansible server
+  hosts: monitors
+  become: true
+  become_user: root
+  vars:
+    server_type: monitor_server
+  roles:
+    - ansible_base_station

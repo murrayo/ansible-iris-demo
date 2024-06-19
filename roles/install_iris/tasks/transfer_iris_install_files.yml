@@ -1,0 +1,80 @@
+---
+
+- name: Transfer IRIS install files
+  ansible.builtin.debug:
+    msg: "Transfer IRIS install files"
+
+- name: Ensure the target directory exists
+  ansible.builtin.file:
+    path: "{{ target_install_file_path }}"
+    state: directory
+    mode: '0755'  # Adjust permissions as needed
+
+- name: Copy the IRIS install file to the RHEL 9 target server
+  ansible.builtin.copy:
+    src: "{{ role_path }}/files/{{ rhel_9_iris_install_file }}"
+    dest: "{{ target_install_file_path }}/{{ rhel_9_iris_install_file }}"
+    mode: '0644'  # Adjust file permissions as needed
+    force: false
+  when: ansible_distribution == "RedHat" and ansible_distribution_major_version == "9"
+
+
+# Uncompress
+
+- name: Check if IRIS has already been uncompressed
+  ansible.builtin.stat:
+    path: "{{ target_install_file_path }}/{{ rhel_9_iris_install_file_base }}"
+  register: iris_unarchived
+  when: ansible_distribution == "RedHat" and ansible_distribution_major_version == "9"
+
+- name: Uncompress the IRIS install file on the target server
+  ansible.builtin.unarchive:
+    src: "{{ target_install_file_path }}/{{ rhel_9_iris_install_file }}"
+    dest: "{{ target_install_file_path }}"
+    remote_src: true
+  when: ansible_distribution == "RedHat" and ansible_distribution_major_version == "9" and not iris_unarchived.stat.exists
+
+# For the demo only Red Hat
+
+#- name: Copy the IRIS install file to the Ubuntu 22 target server
+#  ansible.builtin.copy:
+#    src: "{{ role_path }}/files/{{ ubuntu_22_04_iris_install_file }}"
+#    dest: "{{ target_install_file_path }}/{{ ubuntu_22_04_iris_install_file }}"
+#    mode: '0644'  # Adjust file permissions as needed
+#    force: false
+#  when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version == "22"
+#
+#- name: Check if IRIS has already been uncompressed
+#  ansible.builtin.stat:
+#    path: "{{ target_install_file_path }}/{{ ubuntu_22_04_iris_install_file_base }}"
+#  register: iris_unarchived
+#  when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version == "22"
+#
+#- name: Uncompress the IRIS install file on the target server
+#  ansible.builtin.unarchive:
+#    src: "{{ target_install_file_path }}/{{ ubuntu_22_04_iris_install_file }}"
+#    dest: "{{ target_install_file_path }}"
+#    remote_src: true
+#  when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version == "22" and not iris_unarchived.stat.exists
+
+# Synchronize is a wrapper for rsync and can be useful for more complex tasks, or node to node.
+
+# Example of timing an event.
+# - name: Record start time
+#  ansible.builtin.command: date +%s
+#  register: start_time
+
+# - name: Synchronize the IRIS install file to the target server
+#  ansible.builtin.synchronize:
+#    src: "{{ role_path }}/files/{{ rhel_9_iris_install_file }}"
+#    dest: "{{ target_install_file_path }}"
+#    mode: push
+#  when: ansible_distribution == "RedHat" and ansible_distribution_major_version == "9"
+
+# - name: Record end time
+#  ansible.builtin.command: date +%s
+#  register: end_time
+#
+# - name: Calculate and display the duration
+#  ansible.builtin.debug:
+#    msg: "The task took {{ end_time.stdout | int - start_time.stdout | int }} seconds to complete."

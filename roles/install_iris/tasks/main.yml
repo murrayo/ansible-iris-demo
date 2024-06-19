@@ -1,0 +1,54 @@
+---
+
+- name: Setup IRIS database server
+  ansible.builtin.debug:
+    msg: "Start mainline for IRIS database server install"
+
+- name: Display ansible hosts
+  ansible.builtin.debug:
+    var: hostvars[inventory_hostname]['ansible_host']
+
+# Pre-Flight checks
+
+- name: IRIS upload files demo
+  ansible.builtin.import_tasks: transfer_iris_install_files_demo.yml
+  tags: ["upload_files_demo"]
+
+# upload files before demo
+
+# Transfer IRIS install package files to the server. Installers dependant OS and server role.
+- name: Transfer IRIS install files
+  ansible.builtin.import_tasks: transfer_iris_install_files.yml
+
+# Transfer Application package files to the server. Installers dependant OS and server role.
+
+# Prepare the Operating System for IRIS
+
+- name: Prepare the Operating System for IRIS best practices
+  ansible.builtin.import_tasks: configure_os_for_iris.yml
+
+# Prepare the Operating System for the Application
+
+- name: Prepare the Operating System for the Application
+  ansible.builtin.import_tasks: configure_os_for_tc.yml
+
+# Install IRIS
+
+- name: Install Apache
+  ansible.builtin.import_tasks: "../../common/tasks/apache_install.yml"
+
+- name: Upload cpf merge files for first start database and namespace creation
+  ansible.builtin.import_tasks: cpf_merge_action_files.yml
+
+- name: Install IRIS
+  ansible.builtin.import_tasks: iris_install_silent.yml
+
+# Configure IRIS
+
+# Install Application
+
+# Configure Application
+
+# Post-Flight checks
+
+# Summary

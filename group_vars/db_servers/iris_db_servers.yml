@@ -1,0 +1,38 @@
+---
+
+# Install IRIS
+target_install_file_path: "/data/iris_install_files"
+iris_install_directory: "/iris"
+
+iris_app_database_directory: "/data/databases"
+
+rhel_9_iris_install_file: "IRISHealth-2024.1.0.267.2-lnxrh9x64.tar.gz"
+ubuntu_22_04_iris_install_file: "IRISHealth-2024.1.0.267.2-lnxubuntu2204x64.tar.gz"
+rhel_9_iris_install_file_base: "IRISHealth-2024.1.0.267.2-lnxrh9x64"
+ubuntu_22_04_iris_install_file_base: "IRISHealth-2024.1.0.267.2-lnxubuntu2204x64"
+
+# Could use regex in a task:
+# set_fact:
+#  rhel_9_iris_install_basename: "{{ rhel_9_iris_install_file | regex_replace('\\.tar\\.gz$', '') }}"
+
+# IRIS install variables
+
+instancename: "IRIS"
+installdir: "{{ iris_install_directory }}"
+unicode: "Y"
+initial_security: "Normal"
+instance_owner: "irisowner"
+iris_mgr_group: "irisgroup"
+user_password: "SYS"
+cspsystem_password: "SYS"
+irisuser: "irisuser"
+irisgroup: "irisgroup"
+client_components: "ODBC JDBC"
+start_iris: "Y"
+iris_installer_path: "{{ target_install_file_path }}"
+web_server_type: "Apache"
+apache_config_file: "/etc/httpd/conf/httpd.conf"
+packages: ""  # Add package names if needed, separated by spaces
+
+
+

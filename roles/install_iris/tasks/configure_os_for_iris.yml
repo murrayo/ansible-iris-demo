@@ -1,0 +1,16 @@
+---
+
+- name: Configure OS for IRIS best practices
+  ansible.builtin.debug:
+    msg: "Configure OS for IRIS best best practices"
+
+- name: Set sysctl kernel parameters
+  ansible.posix.sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    state: present
+  loop:
+    - { name: 'vm.swappiness', value: '{{ os_swappiness | int }}' }
+    - { name: 'vm.dirty_background_ratio', value: '{{ os_dirty_background_ratio | int }}' }
+    - { name: 'vm.dirty_ratio', value: '{{ os_dirty_ratio | int }}' }
+  when: ansible_distribution == "RedHat" and ansible_distribution_major_version == "9"

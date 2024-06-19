@@ -1,0 +1,15 @@
+[Unit]
+Description=InterSystems IRIS for TrakCare
+
+[Service]
+Type=forking
+{#User=irisusr#}
+{#Group=irisgrp#}
+ExecStart=/usr/local/etc/irissys/iris start {{ iris_instance }}
+ExecStop=/usr/local/etc/irissys/iris stop {{ iris_instance }} quietly
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+
+

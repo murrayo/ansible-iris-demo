@@ -1,0 +1,9 @@
+---
+
+# Operating System Variables for database server
+
+os_swappiness: 5
+os_dirty_background_ratio: 5
+os_dirty_ratio: 10
+os_huge_page_size_KB: 2048
+

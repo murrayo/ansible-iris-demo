@@ -1,0 +1,21 @@
+---
+
+# Install Application
+common_application_packages:
+  - bzip2
+  - cups
+  - iotop
+  - nano
+  - net-tools
+  - rpcbind
+  - rsync
+  - rsyslog
+  - tmux
+  - sssd
+  - sysstat
+  - unzip
+
+red_hat_application_packages:
+  - nfs-utils
+  - krb5-devel
+  - krb5-libs

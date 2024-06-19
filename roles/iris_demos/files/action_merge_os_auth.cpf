@@ -1,0 +1,4 @@
+[Actions]
+ModifySystem:Name=System,AutheEnabled=$$$AutheOS+$$$AuthePassword+$$$AutheUnauthenticated+$$$AutheSystem+$$$AutheLDAP+$$$AutheKB
+ModifyService:Name=%Service_Terminal,AutheEnabled=$$$AutheUnauthenticated+$$$AutheOS+$$$AuthePassword
+

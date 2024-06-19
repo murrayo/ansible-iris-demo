@@ -1,0 +1,12 @@
+---
+- name: Install TrakCare database server
+  hosts: db_servers
+  become: true
+  become_user: root
+
+  vars:
+    server_type: db_server
+    iris_instance: "IRIS"
+
+  roles:
+    - iris_demos
