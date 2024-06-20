@@ -116,6 +116,8 @@ For example:
 "msg": "Dump of variable sent to: ~/gs2024-ansible-demo/ansible-project-tc/roles/db_server/files/dbserver1_vars.json"
 ```
 
-For example search for `architecture` in the output file. Your group and other variables are at the end of the file.
+For example search for `architecture` in the output file. 
+
+Your group variables and other variables are at the end of the file.
 
 ---
