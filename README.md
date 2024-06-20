@@ -21,15 +21,15 @@ If you are connecting to AWS or other networks, you may need to use other method
   
 # Running the demos  
   
-The demos assume that your infrastructure is configured and you have Red Hat 9 or Ubuntu 22 installed. This is important because I am installing IRIS for these specific OS versions and demonstrating the Ansible `when` clause using these versions.
-
 ## Update the inventory
 
 You need to add your hosts to the `inventory` file. For the demos you only need one or more host names in the `[db_servers]` group. The other groups are just examples to explain grouping in the presentation.
 
 ## Review the install paths and the install file names. 
 
-You need to review the group variables file if you are going to install IRIS for a different OS or version. See the file `group_vars/db_servers/iris_db_servers.yml` as shown below.
+The demos assume that your infrastructure is configured and you have Red Hat 9 or Ubuntu 22 installed. This is important because I am installing IRIS for these specific OS versions and demonstrating the Ansible `when` clause using these versions.
+
+> You need to review the group variables file if you are going to install IRIS for a different OS or version. See the file `group_vars/db_servers/iris_db_servers.yml` as shown below.
 
 ```
 # Install IRIS  
