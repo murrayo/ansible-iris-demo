@@ -113,7 +113,7 @@ Files are sent to:
 "{{ role_path }}/files/{{ inventory_hostname }}_vars.json"
 
 For example:
-"msg": "Dump of variable sent to: /Users/moldfiel/projects/all_live_projects/bitbucket_tc-performance-analysis-tools/gs2024-ansible-demo/ansible-project-tc/roles/db_server/files/monitor1_vars.json"
+"msg": "Dump of variable sent to: ~/gs2024-ansible-demo/ansible-project-tc/roles/db_server/files/dbserver1_vars.json"
 ```
 
 For example search for `architecture` in the output file. Your group and other variables are at the end of the file.
