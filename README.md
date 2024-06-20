@@ -2,7 +2,7 @@
   
 I have created some example Ansible modules that add functionality beyond simply using the Ansible built-in Command or Shell modules to manage IRIS. You can use these as an inspiration for creating your own modules. My hope is that this will be the start of creating an IRIS community Ansible collection.  
   
-Please see the [InterSystems Developer Community post](https://community.intersystems.com/post/ansible-modules-and-iris-demo)  for background and links to the conference presentation.
+Please see the [InterSystems Developer Community post](https://community.intersystems.com/post/ansible-modules-and-iris-demo)  for background and links to a conference presentation.
   
 ---  
   
