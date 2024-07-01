@@ -3,6 +3,7 @@
 from ansible.module_utils.basic import AnsibleModule
 import subprocess
 import shlex
+import shutil
 
 IRIS_INSTANCE_DETAILS = [
     "iris_qlist_instance_name",
@@ -20,6 +21,18 @@ IRIS_INSTANCE_DETAILS = [
     "iris_qlist_instance_data_directory",
     "iris_qlist_extra_field_not_in_documentation",
 ]
+
+def command_exists(command):
+    """
+    Check if a command exists on the system.
+
+    Args:
+        command (str): The command to check.
+
+    Returns:
+        bool: True if the command exists, False otherwise.
+    """
+    return shutil.which(command) is not None
 
 def run_iris_qlist(instance_name=None):
     """
@@ -53,6 +66,10 @@ def main():
         ),
         supports_check_mode=True,
     )
+
+    # Check if the 'iris' command exists
+    if not command_exists("iris"):
+        module.fail_json(msg="'iris' command not found. Please ensure IRIS is installed and iris in the system's PATH.")
 
     instance_name = module.params.get("instance_name")
 
