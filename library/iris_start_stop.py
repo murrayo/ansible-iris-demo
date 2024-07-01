@@ -11,7 +11,7 @@ def run_iris_command(module, command):
         proc = subprocess.run(command, capture_output=True, text=True, check=False)
         return proc.returncode, proc.stdout.strip(), proc.stderr.strip()
     except FileNotFoundError:
-        module.fail_json(msg="iris command not found. Make sure it's installed and in PATH.")
+        module.fail_json(msg="'iris' command not found. Please ensure IRIS is installed and iris in the system's PATH.")
     except subprocess.TimeoutExpired:
         module.fail_json(msg="iris command timed out.")
     except subprocess.CalledProcessError as e:
