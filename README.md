@@ -5,6 +5,16 @@ I have created some example Ansible modules that add functionality beyond simply
 Please see the [InterSystems Developer Community post](https://community.intersystems.com/post/ansible-modules-and-iris-demo)  for background and links to a conference presentation.
   
 ---  
+
+# The IRIS Ansible modules
+
+If you are just looking for the modules they are [here](https://github.com/murrayo/ansible-iris-demo/blob/main/library/)
+
+> Note: You will have to tell Ansible where the modules are. For an example see the `ansible.cfg` file.
+
+For more details about writing modules see the [Ansible documentation](https://docs.ansible.com/ansible/latest/dev_guide/developing_modules_general.html#developing-modules-general)
+
+---
   
 # If you are new to Ansible  
   
